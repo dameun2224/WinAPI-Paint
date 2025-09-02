@@ -35,11 +35,11 @@ void CreateRGBTable(const WCHAR* name, LONG left, LONG top, LONG right, LONG bot
 {
 	// RGB의 스크롤 바 생성 및 범위 설정
 	CreateWindowW(L"scrollbar", L"R", WS_CHILD | WS_VISIBLE | SBS_HORZ, right + 20, top + 15, right + 30, 15, hWnd, id, hInst, NULL);
-	SetScrollRange(FindWindowW(L"scrollbar", L"R"), SB_CTL, 0, 255, TRUE);
+	SetScrollRange(FindWindowExW(hWnd, NULL, L"scrollbar", L"R"), SB_CTL, 0, 255, TRUE);
 	CreateWindowW(L"scrollbar", L"G", WS_CHILD | WS_VISIBLE | SBS_HORZ, right + 20, top + 45, right + 30, 15, hWnd, id + 1, hInst, NULL);
-	SetScrollRange(FindWindowW(L"scrollbar", L"G"), SB_CTL, 0, 255, TRUE);
+	SetScrollRange(FindWindowExW(hWnd, NULL, L"scrollbar", L"G"), SB_CTL, 0, 255, TRUE);
 	CreateWindowW(L"scrollbar", L"B", WS_CHILD | WS_VISIBLE | SBS_HORZ, right + 20, top + 75, right + 30, 15, hWnd, id + 2, hInst, NULL);
-	SetScrollRange(FindWindowW(L"scrollbar", L"B"), SB_CTL, 0, 255, TRUE);
+	SetScrollRange(FindWindowExW(hWnd, NULL, L"scrollbar", L"B"), SB_CTL, 0, 255, TRUE);
 	//SetColor(hWnd);
 }
 
@@ -50,9 +50,9 @@ void SetColor(HWND hWnd)
 	HDC hdc = GetDC(hWnd);
 
 	// 스크롤 Bar의 값 받아오기
-	int R = GetScrollPos(FindWindowW(L"scrollbar", L"R"), SB_HORZ);
-	int G = GetScrollPos(FindWindowW(L"scrollbar", L"G"), SB_HORZ);
-	int B = GetScrollPos(FindWindowW(L"scrollbar", L"B"), SB_HORZ);
+	int R = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"R"), SB_CTL);
+	int G = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"G"), SB_CTL);
+	int B = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"B"), SB_CTL);
 
 	HBRUSH newBrush = CreateSolidBrush(RGB(R, G, B));
 	HBRUSH OldBrush = (HBRUSH)SelectObject(hdc, newBrush);
@@ -71,3 +71,9 @@ void SetColor(HWND hWnd)
 	DeleteObject(newBrush);
 	ReleaseDC(hWnd, hdc);
 }
+
+// 이미지 씌우기
+// 더블버퍼링
+// 색상선택
+// 버튼 제어
+// 등등 기능을 쪼개서 하나씩 추가할 예정
