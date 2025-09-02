@@ -157,6 +157,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
+
+            //토글 버튼 처리하기
+            SetFunction(wParam, lParam, hWnd);
         }
         break;
     case WM_PAINT:

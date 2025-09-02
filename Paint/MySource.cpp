@@ -2,7 +2,7 @@
 
 
 /* 윈도우 창 설정 */
-HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name) 
+HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name)
 {
 	// 윈도우 창 구조체 설정 및 적용하기
 	WNDCLASSEXW wcex;
@@ -21,13 +21,64 @@ HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name)
 	RegisterClassExW(&wcex);
 
 	// 해당 윈도우 창을 가지고와서 윈도우 창 생성하기
-	return CreateWindowW(name, name, WS_MAXIMIZE|WS_SYSMENU, 100, 100, 750, 750, nullptr, nullptr, hInstance, nullptr);
+	return CreateWindowW(name, name, WS_MAXIMIZE | WS_SYSMENU, 100, 100, 750, 750, nullptr, nullptr, hInstance, nullptr);
 }
 
 /* 버튼 생성하기 */
-void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst) 
+void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst)
 {
 	CreateWindowW(L"button", name, WS_CHILD | WS_VISIBLE | BS_CHECKBOX, x, y, width, height, hWnd, id, hInst, NULL);
+}
+
+/* 그리기, 지우기 토글 값 세팅 */
+// wParam(32Bit) : 컨트롤 ID + 알림 코드
+// lParam(32Bit) : 컨트롤 핸들 (고유한 값, 메시지를 보낸 컨트롤의 핸들)
+void SetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd)
+{
+	// HIWORD: 앞의 16Bit, LOWORD: 뒤의 16Bit
+	if (HIWORD(wParam) == BN_CLICKED) // 버튼이 클릭되었을 때
+	{
+		switch (LOWORD(wParam))
+		{
+		// 펜 버튼 (id: 1)
+		case 1:
+		{
+			// 펜이 체크되지 않은 상태에서 클릭: 펜 체크, 지우개 언체크
+			if(SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
+				SendMessageW((HWND)lParam, BM_SETCHECK, BST_CHECKED, 0);
+				SendMessageW(FindWindowEx(hWnd, NULL, L"button", L"Erase"), BM_SETCHECK, BST_UNCHECKED, 0);
+				return;
+			}
+			// 펜이 체크된 상태에서 클릭: 펜 언체크
+			else {
+				SendMessageW((HWND)lParam, BM_SETCHECK, BST_UNCHECKED, 0);
+			}
+		}
+		// 지우개 버튼 (id: 2)
+		case 2:
+		{
+			// 지우개가 체크되지 않은 상태에서 클릭: 지우개 체크, 펜 언체크
+			if (SendMessage((HWND)lParam, BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
+				SendMessageW((HWND)lParam, BM_SETCHECK, BST_CHECKED, 0);
+				SendMessageW(FindWindowEx(hWnd, NULL, L"button", L"Pen"), BM_SETCHECK, BST_UNCHECKED, 0);
+				return;
+			}
+			// 지우개가 체크된 상태에서 클릭: 지우개 언체크
+			else {
+				SendMessageW((HWND)lParam, BM_SETCHECK, BST_UNCHECKED, 0);
+			}
+		}
+		} // 스위치문 종료
+	}
+}
+
+/* 토글 값 받아오기 */
+int GetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd)
+{
+	// 1: 펜, 2: 지우개, 0: 아무것도 선택 안됨
+	if(SendMessageW(FindWindowExW(hWnd, NULL, L"button", L"Pen"), BM_GETCHECK, 0, 0) == BST_CHECKED) return 1;
+	if (SendMessageW(FindWindowExW(hWnd, NULL, L"button", L"Erase"), BM_GETCHECK, 0, 0) == BST_CHECKED) return 2; 
+	else return 0;
 }
 
 /* 색상 선택 도구 만들기 */
