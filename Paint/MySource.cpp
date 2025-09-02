@@ -2,7 +2,8 @@
 
 
 /* 윈도우 창 설정 */
-HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name) {
+HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name) 
+{
 
 	// 윈도우 창 구조체 설정 및 적용하기
 
@@ -38,4 +39,10 @@ HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name) 
 	// 해당 윈도우 창을 가지고와서 윈도우 창 생성하기
 
 	return CreateWindowW(name, name, WS_MAXIMIZE|WS_SYSMENU, 100, 100, 750, 750, nullptr, nullptr, hInstance, nullptr);
+}
+
+/* 버튼 생성하기 */
+void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst) 
+{
+	CreateWindowW(L"button", name, WS_CHILD | WS_VISIBLE | BS_CHECKBOX, x, y, width, height, hWnd, id, hInst, NULL);
 }

@@ -128,6 +128,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_CREATE:
+    {
+        // 버튼 생성
+
+		CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
+
+		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
+
+        // 버튼 생성 및 이미지 씌우기
+
+        break;
+    }
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
