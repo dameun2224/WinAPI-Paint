@@ -112,11 +112,11 @@ void SetColor(HWND hWnd)
 
 	// 스크롤 Bar의 값 표시해주기
 	WCHAR text[10];
-	wsprintf(text, L"R : %d", R, SB_HORZ);
+	wsprintf(text, L"R : %d", R);
 	TextOutW(hdc, 360, 40, text, lstrlenW(text));
-	wsprintf(text, L"G : %d", G, SB_HORZ);
+	wsprintf(text, L"G : %d", G);
 	TextOutW(hdc, 360, 70, text, lstrlenW(text));
-	wsprintf(text, L"B : %d", B, SB_HORZ);
+	wsprintf(text, L"B : %d", B);
 	TextOutW(hdc, 360, 100, text, lstrlenW(text));
 	SelectObject(hdc, OldBrush);
 	DeleteObject(newBrush);
