@@ -14,3 +14,4 @@ int GetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd);
 // 색상 테이블 생성 함수
 void CreateRGBTable(const WCHAR* name, LONG left, LONG top, LONG right, LONG bottom, HMENU id, HWND hWnd, HINSTANCE hInst);
 void SetColor(HWND hWnd);
+void SetScrollFunction(WPARAM wParam, LPARAM lParam);

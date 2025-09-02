@@ -35,7 +35,7 @@ void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HM
 // lParam(32Bit) : 컨트롤 핸들 (고유한 값, 메시지를 보낸 컨트롤의 핸들)
 void SetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd)
 {
-	// HIWORD: 앞의 16Bit, LOWORD: 뒤의 16Bit
+	// HIWORD: 상위 16Bit, LOWORD: 하위 16Bit
 	if (HIWORD(wParam) == BN_CLICKED) // 버튼이 클릭되었을 때
 	{
 		switch (LOWORD(wParam))
@@ -122,6 +122,30 @@ void SetColor(HWND hWnd)
 	DeleteObject(newBrush);
 	ReleaseDC(hWnd, hdc);
 }
+
+/* 스크롤 동작 */
+// WPARAM : 스크롤바의 동작 코드(LOWORD) + 스크롤바가 움직인 새로운 위치(HIWORD)
+void SetScrollFunction(WPARAM wParam, LPARAM lParam) {
+	switch (LOWORD(wParam))
+	{
+	case SB_LINELEFT: // 왼쪽 화살표 클릭: 스크롤바 값을 1만큼 감소
+		SetScrollPos((HWND)lParam, SB_CTL, max(0, GetScrollPos((HWND)lParam, SB_CTL) - 1), TRUE);
+		break;
+	case SB_PAGELEFT: // 왼쪽 영역 클릭: 스크롤바 값을 5만큼 감소
+		SetScrollPos((HWND)lParam, SB_CTL, max(0, GetScrollPos((HWND)lParam, SB_CTL) - 5), TRUE);
+		break;
+	case SB_LINERIGHT: // 오른쪽 화살표 클릭: 스크롤바 값을 1만큼 증가
+		SetScrollPos((HWND)lParam, SB_CTL, min(255, GetScrollPos((HWND)lParam, SB_CTL) + 1), TRUE);
+		break;
+	case SB_PAGERIGHT: // 오른쪽 영역 클릭: 스크롤바 값을 5만큼 증가
+		SetScrollPos((HWND)lParam, SB_CTL, min(255, GetScrollPos((HWND)lParam, SB_CTL) + 5), TRUE);
+		break;
+	case SB_THUMBTRACK: // 스크롤바 막대 드래그: 드래그한 위치로 값을 설정
+		SetScrollPos((HWND)lParam, SB_CTL, HIWORD(wParam), TRUE);
+		break;
+	}
+}
+
 
 // 이미지 씌우기
 // 더블버퍼링
