@@ -128,18 +128,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    // 윈도우 생성 메세지
     case WM_CREATE:
-    {
-        // 버튼 생성
+        {
+            // 버튼 생성
+            CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
+            CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
+            // 버튼 생성 및 이미지 씌우기
 
-		CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
+            // 색상 테이블 생성
+            CreateRGBTable(L"RGBtable", 80, 30, 150, 120, (HMENU)10, hWnd, hInst);
 
-		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
-
-        // 버튼 생성 및 이미지 씌우기
-
-        break;
-    }
+            break;
+        }
+    // 각종 버튼에 따른 동작
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -161,7 +163,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+			SetColor(hWnd); 
             EndPaint(hWnd, &ps);
         }
         break;
