@@ -1,4 +1,5 @@
 #include "MySource.h"
+#include <windowsx.h>
 
 
 /* 윈도우 창 설정 */
@@ -31,31 +32,30 @@ void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HM
 }
 
 /* 그리기, 지우기 토글 값 세팅 */
-// wParam(32Bit) : 컨트롤 ID + 알림 코드
-// lParam(32Bit) : 컨트롤 핸들 (고유한 값, 메시지를 보낸 컨트롤의 핸들)
 void SetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd)
 {
+	// wParam(32Bit) : 컨트롤 ID + 알림 코드
+	// lParam(32Bit) : 컨트롤 핸들 (고유한 값, 메시지를 보낸 컨트롤의 핸들)
+
 	// HIWORD: 상위 16Bit, LOWORD: 하위 16Bit
 	if (HIWORD(wParam) == BN_CLICKED) // 버튼이 클릭되었을 때
 	{
 		switch (LOWORD(wParam))
 		{
-		// 펜 버튼 (id: 1)
-		case 1:
+		case 1: // 펜 버튼 (id: 1)
 		{
 			// 펜이 체크되지 않은 상태에서 클릭: 펜 체크, 지우개 언체크
 			if(SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
 				SendMessageW((HWND)lParam, BM_SETCHECK, BST_CHECKED, 0);
 				SendMessageW(FindWindowEx(hWnd, NULL, L"button", L"Erase"), BM_SETCHECK, BST_UNCHECKED, 0);
-				return;
 			}
 			// 펜이 체크된 상태에서 클릭: 펜 언체크
 			else {
 				SendMessageW((HWND)lParam, BM_SETCHECK, BST_UNCHECKED, 0);
 			}
 		}
-		// 지우개 버튼 (id: 2)
-		case 2:
+		break;
+		case 2: // 지우개 버튼 (id: 2)
 		{
 			// 지우개가 체크되지 않은 상태에서 클릭: 지우개 체크, 펜 언체크
 			if (SendMessage((HWND)lParam, BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
@@ -68,8 +68,10 @@ void SetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd)
 				SendMessageW((HWND)lParam, BM_SETCHECK, BST_UNCHECKED, 0);
 			}
 		}
+		break;
 		} // 스위치문 종료
 	}
+	return;
 }
 
 /* 토글 값 받아오기 */
@@ -122,8 +124,10 @@ void SetColor(HWND hWnd, HDC memDC, HBITMAP memBitmap)
 }
 
 /* 스크롤 동작 */
-// WPARAM : 스크롤바의 동작 코드(LOWORD) + 스크롤바가 움직인 새로운 위치(HIWORD)
-void SetScrollFunction(WPARAM wParam, LPARAM lParam) {
+void SetScrollFunction(WPARAM wParam, LPARAM lParam) 
+{
+	// WPARAM : 스크롤바의 동작 코드(LOWORD) + 스크롤바가 움직인 새로운 위치(HIWORD)
+
 	switch (LOWORD(wParam))
 	{
 	case SB_LINELEFT: // 왼쪽 화살표 클릭: 스크롤바 값을 1만큼 감소
@@ -144,8 +148,9 @@ void SetScrollFunction(WPARAM wParam, LPARAM lParam) {
 	}
 }
 
-// 메모리 DC 및 비트맵에 메모리 할당하기
-void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap) {
+/* 메모리 DC 및 비트맵에 메모리 할당하기 */ 
+void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap) 
+{
 	// 윈도우의 DC 가져와 화면과 호환되는 메모리 DC 생성
 	// DC: 도구 상자. 붓, 펜, 브러시, 색상, 글꼴 등 모든 그리기 도구 정보를 담고 있음
 	HDC hdc = GetDC(hWnd);
@@ -167,6 +172,57 @@ void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap) 
 	ReleaseDC(hWnd, hdc);
 }
 
+/* 그리기 */
+POINT Draw(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos) 
+{
+	// 마우스 커서가 1픽셀이라도 움직이면 초당 수십, 수백 번씩 호출됨
+	// 매 그리기 작업마다 펜을 새로 생성하고 삭제함
+
+	// 스크롤 Bar의 값 받아오기
+	int R = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"R"), SB_CTL);
+	int G = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"G"), SB_CTL);
+	int B = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"B"), SB_CTL);
+
+	HPEN newPen = CreatePen(PS_SOLID, 10, RGB(R, G, B)); // 스타일: PS_SOLID(실선), 굵기: 10, 색상: RGB(R, G, B)
+	HPEN oldPen = (HPEN)SelectObject(hdc, newPen); // newPen의 핸들 저장
+
+	POINT pos;
+	pos.x = GET_X_LPARAM(lParam);
+	pos.y = GET_Y_LPARAM(lParam);
+
+	// 아주 짧은 시간동안 move와 line이 연달아 실행되면서 연속된 선분을 그림
+	MoveToEx(hdc, stPos.x, stPos.y, NULL); // 펜의 위치를 마우스(pos) 위치로 이동
+	LineTo(hdc, pos.x, pos.y); // 펜의 위치에서 마우스(pos) 위치까지 선 그리기
+
+	SelectObject(hdc, oldPen); 
+	DeleteObject(newPen);
+
+	stPos.x = pos.x;
+	stPos.y = pos.y;
+
+	return stPos; // 다음 그리기 시작점 좌표 반환
+}
+
+/* 지우기 */
+POINT Erase(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos) 
+{
+	HPEN newPen = CreatePen(PS_SOLID, 10, RGB(255, 255, 255));
+	HPEN oldPen = (HPEN)SelectObject(hdc, newPen);
+
+	POINT pos;
+	pos.x = GET_X_LPARAM(lParam);
+	pos.y = GET_Y_LPARAM(lParam);
+
+	MoveToEx(hdc, stPos.x, stPos.y, NULL);
+	LineTo(hdc, pos.x, pos.y);
+
+	SelectObject(hdc, oldPen);
+	DeleteObject(newPen);
+
+	stPos.x = pos.x;
+	stPos.y = pos.y;
+	return stPos;
+}
 
 // 이미지 씌우기
 // 더블버퍼링

@@ -17,3 +17,7 @@ void SetColor(HWND hWnd, HDC memDC, HBITMAP memBitmap);
 void SetScrollFunction(WPARAM wParam, LPARAM lParam);
 
 void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap);
+
+// 그리기, 지우기 함수
+POINT Draw(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos);
+POINT Erase(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos);
