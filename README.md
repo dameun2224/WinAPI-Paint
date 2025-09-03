@@ -1,6 +1,6 @@
 # WinAPI-Paint
 
-![image](./image.png)
+![image](./Paint/image.png)
 
 Windows API를 활용하여 제작한 간단한 그림판 프로그램입니다. 
 
