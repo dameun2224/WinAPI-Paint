@@ -139,6 +139,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
 
 		// 버튼 생성 및 이미지 씌우기
+		CreateButtonImg(L"Pen", IDI_ICON1, hWnd, hInst);
+		CreateButtonImg(L"Erase", IDI_ICON2, hWnd, hInst);
 
 		// 색상 테이블 생성
 		CreateRGBTable(L"RGBtable", 80, 30, 150, 120, (HMENU)10, hWnd, hInst);

@@ -28,7 +28,12 @@ HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name)
 /* 버튼 생성하기 */
 void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst)
 {
-	CreateWindowW(L"button", name, WS_CHILD | WS_VISIBLE | BS_CHECKBOX, x, y, width, height, hWnd, id, hInst, NULL);
+	CreateWindowW(L"button", name, WS_CHILD | WS_VISIBLE | BS_CHECKBOX | BS_PUSHLIKE | BS_ICON, x, y, width, height, hWnd, id, hInst, NULL);
+}
+void CreateButtonImg(const WCHAR* buttonName, int imgName, HWND hWnd, HINSTANCE hInst)
+{
+	HICON hIcon = LoadIcon(hInst, MAKEINTRESOURCE(imgName));
+	SendMessage(FindWindowExW(hWnd, NULL, L"button", buttonName), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIcon);
 }
 
 /* 그리기, 지우기 토글 값 세팅 */

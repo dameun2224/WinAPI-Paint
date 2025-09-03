@@ -8,6 +8,7 @@ HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name);
 
 // 버튼 생성 함수
 void CreateButton(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst);
+void CreateButtonImg(const WCHAR* buttonName, int imgName, HWND hWnd, HINSTANCE hInst);
 void SetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd);
 int GetFunction(WPARAM wParam, LPARAM lParam, HWND hWnd);
 

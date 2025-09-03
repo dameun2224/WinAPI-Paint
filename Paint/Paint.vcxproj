@@ -137,6 +137,8 @@
     <ResourceCompile Include="Paint.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\Downloads\icon\Erase.ico" />
+    <Image Include="..\..\..\..\Downloads\icon\Pen.ico" />
     <Image Include="Paint.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
