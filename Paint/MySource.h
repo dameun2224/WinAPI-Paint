@@ -26,3 +26,5 @@ POINT Erase(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos);
 // 커스텀 버튼
 void CreateButtonCustom(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst);
 void DrawGreetingText(HWND hWnd, HDC hdc);
+void funV(HWND hWnd, HDC hdc, int sx, int sy, int w, int type);
+void funH(HWND hWnd, HDC hdc, int sx, int sy, int w, int type);

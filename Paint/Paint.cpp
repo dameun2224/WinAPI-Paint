@@ -4,6 +4,8 @@
 #include "Paint.h"
 #include "MySource.h"
 #include <windowsx.h>
+#include <cstdlib> 
+#include <ctime>  
 
 #define MAX_LOADSTRING 100
 
@@ -134,6 +136,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	// 윈도우 생성 메세지
 	case WM_CREATE:
 	{
+		// 난수 생성기 초기화
+		srand((unsigned int)time(NULL));
+
 		// 버튼 생성
 		CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
 		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);

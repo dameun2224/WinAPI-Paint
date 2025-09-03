@@ -1,6 +1,7 @@
 #include "MySource.h"
 #include <windowsx.h>
-
+#include <cstdlib> 
+#include <ctime>   
 
 /* 윈도우 창 설정 */
 HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name)
@@ -236,12 +237,78 @@ void CreateButtonCustom(const WCHAR* name, LONG x, LONG y, LONG width, LONG heig
 }
 
 /* 환영 문구 그리기 */ 
-void DrawGreetingText(HWND hWnd, HDC hdc) 
+void DrawGreetingText(HWND hWnd, HDC hdc)
 {
-	RECT rect;
-	GetClientRect(hWnd, &rect);
-	const WCHAR* text = L"Welcome to the Paint Application!";
 	SetBkMode(hdc, TRANSPARENT);
-	DrawTextW(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+	// 랜덤 시작 좌표
+	int sx = rand() % 700 - 50;
+	int sy = rand() % 700 - 50;
+
+	// 색감 통일을 위한 랜덤 값
+	int randomType = rand() % 6 + 1;
+
+	funV(hWnd, hdc, sx, sy, 200, randomType);
+	funH(hWnd, hdc, sx, sy + 100, 100, randomType);
+	funV(hWnd, hdc, sx + 100, sy, 200, randomType);
+
+	funV(hWnd, hdc, sx + 200, sy + 30, 180, randomType);
+	funH(hWnd, hdc, sx + 195, sy, 10, randomType);
+
 	SetBkMode(hdc, OPAQUE);
+}
+
+/* 가로로 삐뚤빼뚤한 직선 그리기 */
+void funV(HWND hWnd, HDC hdc, int sx, int sy, int w, int type) {
+	int r = 0, g = 0, b = 0;
+	int* p = NULL;
+
+	int rnd1 = rand() % 255;
+	if (type == 1) { r = 255; g = 0; b = rnd1; p = &g; }
+	else if (type == 2) { r = 255; g = rnd1; b = 0; p = &b; }
+	else if (type == 3) { r = 0; g = 255; b = rnd1; p = &r; }
+	else if (type == 4) { r = rnd1; g = 255; b = 0; p = &b; }
+	else if (type == 5) { r = 0; g = rnd1; b = 255; p = &r; }
+	else if (type == 6) { r = rnd1; g = 0; b = 255; p = &g; }
+
+	int x = sx;
+	*p = rand() % 255;
+	for (int y = sy; y <= sy + w; y++) {
+		HPEN newPen = CreatePen(PS_SOLID, 20, RGB(r, g, b));
+		HPEN oldPen = (HPEN)SelectObject(hdc, newPen);
+		MoveToEx(hdc, x, y, NULL);
+		LineTo(hdc, x, y);
+		SelectObject(hdc, oldPen);
+		DeleteObject(newPen);
+
+		int rnd2 = rand() % 3 - 1;
+		x += rnd2;
+	}
+}
+
+/* 세로로 삐뚤빼뚤한 직선 그리기 */
+void funH(HWND hWnd, HDC hdc, int sx, int sy, int w, int type) {
+	int r = 0, g = 0, b = 0;
+	int* p = NULL;
+
+	if (type == 1) { r = 255; g = 0; b = 0; p = &g; }
+	else if (type == 2) { r = 255; g = 0; b = 0; p = &b; }
+	else if (type == 3) { r = 0; g = 255; b = 0; p = &r; }
+	else if (type == 4) { r = 0; g = 255; b = 0; p = &b; }
+	else if (type == 5) { r = 0; g = 0; b = 255; p = &r; }
+	else if (type == 6) { r = 0; g = 0; b = 255; p = &g; }
+
+	int y = sy;
+	*p = rand() % 255;
+	for (int x = sx; x <= sx + w; x++) {
+		HPEN newPen = CreatePen(PS_SOLID, 20, RGB(r, g, b));
+		HPEN oldPen = (HPEN)SelectObject(hdc, newPen);
+		MoveToEx(hdc, x, y, NULL);
+		LineTo(hdc, x, y);
+		SelectObject(hdc, oldPen);
+		DeleteObject(newPen);
+
+		int rnd = rand() % 5 - 2;
+		y += rnd;
+	}
 }
