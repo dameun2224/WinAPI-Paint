@@ -1,5 +1,4 @@
 ﻿// Paint.cpp : 애플리케이션에 대한 진입점을 정의합니다.
-//
 
 #include "framework.h"
 #include "Paint.h"
@@ -11,6 +10,9 @@
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+HDC memDC;										// 메모리 DC(더블 버퍼링을 위한 가상 캔버스)
+HBITMAP memBitmap;								// 메모리 비트맵 (그림을 그릴 실제 종이)
+POINT stPos;									// 그리기 시작점 좌표
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -134,10 +136,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// 버튼 생성
 		CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
 		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
+
 		// 버튼 생성 및 이미지 씌우기
 
 		// 색상 테이블 생성
 		CreateRGBTable(L"RGBtable", 80, 30, 150, 120, (HMENU)10, hWnd, hInst);
+		
+		// 더블 버퍼링을 위한 메모리 세팅
+		CreateBackPage(hWnd, hInst, &memDC, &memBitmap);
 
 		break;
 	}
@@ -166,7 +172,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 	{
 		SetScrollFunction(wParam, lParam);
-		InvalidateRect(hWnd, NULL, TRUE);
+		InvalidateRect(hWnd, NULL, FALSE);
 		UpdateWindow(hWnd);
 	}
 	break;
@@ -174,7 +180,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
-		SetColor(hWnd);
+		SetColor(hWnd, memDC, memBitmap);
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		BitBlt(hdc, 0, 0, rect.right, rect.bottom, memDC, 0, 0, SRCCOPY);
 		EndPaint(hWnd, &ps);
 	}
 	break;

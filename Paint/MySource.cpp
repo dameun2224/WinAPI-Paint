@@ -95,32 +95,30 @@ void CreateRGBTable(const WCHAR* name, LONG left, LONG top, LONG right, LONG bot
 }
 
 /* 색상 선택 */
-void SetColor(HWND hWnd)
+void SetColor(HWND hWnd, HDC memDC, HBITMAP memBitmap)
 {
-	// 장치 컨텍스트 핸들(Handle to a Device Context)
-	HDC hdc = GetDC(hWnd);
-
 	// 스크롤 Bar의 값 받아오기
 	int R = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"R"), SB_CTL);
 	int G = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"G"), SB_CTL);
 	int B = GetScrollPos(FindWindowExW(hWnd, NULL, L"scrollbar", L"B"), SB_CTL);
 
 	HBRUSH newBrush = CreateSolidBrush(RGB(R, G, B));
-	HBRUSH OldBrush = (HBRUSH)SelectObject(hdc, newBrush);
+	HBRUSH OldBrush = (HBRUSH)SelectObject(memDC, newBrush);
+
 	// 선택된 색상 보여주기
-	Rectangle(hdc, 80, 30, 150, 120);
+	Rectangle(memDC, 80, 30, 150, 120);
 
 	// 스크롤 Bar의 값 표시해주기
 	WCHAR text[10];
 	wsprintf(text, L"R : %d", R);
-	TextOutW(hdc, 360, 40, text, lstrlenW(text));
+	TextOutW(memDC, 360, 40, text, lstrlenW(text));
 	wsprintf(text, L"G : %d", G);
-	TextOutW(hdc, 360, 70, text, lstrlenW(text));
+	TextOutW(memDC, 360, 70, text, lstrlenW(text));
 	wsprintf(text, L"B : %d", B);
-	TextOutW(hdc, 360, 100, text, lstrlenW(text));
-	SelectObject(hdc, OldBrush);
+	TextOutW(memDC, 360, 100, text, lstrlenW(text));
+
+	SelectObject(memDC, OldBrush);
 	DeleteObject(newBrush);
-	ReleaseDC(hWnd, hdc);
 }
 
 /* 스크롤 동작 */
@@ -144,6 +142,29 @@ void SetScrollFunction(WPARAM wParam, LPARAM lParam) {
 		SetScrollPos((HWND)lParam, SB_CTL, HIWORD(wParam), TRUE);
 		break;
 	}
+}
+
+// 메모리 DC 및 비트맵에 메모리 할당하기
+void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap) {
+	// 윈도우의 DC 가져와 화면과 호환되는 메모리 DC 생성
+	// DC: 도구 상자. 붓, 펜, 브러시, 색상, 글꼴 등 모든 그리기 도구 정보를 담고 있음
+	HDC hdc = GetDC(hWnd);
+	*memDC = CreateCompatibleDC(hdc);
+
+	// 사각형 좌표 구조체 생성 및 클라이언트 영역 크기 받아오기
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+
+	// 빈 비트맵 생성 및 메모리 DC에 비트맵 연결
+	// Bitmap: 그림이 그려지는 실제 이미지 데이터
+	*memBitmap = CreateCompatibleBitmap(hdc, rect.right, rect.bottom);
+	(HBITMAP)SelectObject(*memDC, *memBitmap);
+
+	// 메모리 DC의 배경 흰색으로 채우기
+	FillRect(*memDC, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
+
+	// 윈도우 DC 반환 (DC는 시스템 자원이므로 반드시 반환해야 함)
+	ReleaseDC(hWnd, hdc);
 }
 
 
