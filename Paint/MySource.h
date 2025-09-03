@@ -22,3 +22,7 @@ void CreateBackPage(HWND hWnd, HINSTANCE hInst, HDC* memDC, HBITMAP* memBitmap);
 // 그리기, 지우기 함수
 POINT Draw(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos);
 POINT Erase(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos);
+
+// 커스텀 버튼
+void CreateButtonCustom(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst);
+void DrawGreetingText(HWND hWnd, HDC hdc);

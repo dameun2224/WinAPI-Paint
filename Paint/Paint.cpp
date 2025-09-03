@@ -137,6 +137,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// 버튼 생성
 		CreateButton(L"Pen", 20, 20, 50, 50, (HMENU)1, hWnd, hInst);
 		CreateButton(L"Erase", 20, 75, 50, 50, (HMENU)2, hWnd, hInst);
+		CreateButtonCustom(L"Hi", 20, 130, 50, 30, (HMENU)3, hWnd, hInst);
 
 		// 버튼 생성 및 이미지 씌우기
 		CreateButtonImg(L"Pen", IDI_ICON1, hWnd, hInst);
@@ -153,8 +154,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	// 각종 버튼에 따른 동작
 	case WM_COMMAND:
 	{
-		//토글 버튼 처리하기
-		SetFunction(wParam, lParam, hWnd);
+		int tmp = HIWORD(wParam);
+		switch (tmp)
+		{
+			case BN_CLICKED: // 버튼 클릭
+				if (LOWORD(wParam) == 3) { // Hi 버튼 클릭
+					DrawGreetingText(hWnd, memDC);
+					InvalidateRect(hWnd, NULL, FALSE);
+				}
+				else {
+					SetFunction(wParam, lParam, hWnd);
+				}
+				break;
+		default:
+			break;
+		}
 
 		int wmId = LOWORD(wParam);
 		// 메뉴 선택을 구문 분석합니다:

@@ -117,11 +117,11 @@ void SetColor(HWND hWnd, HDC memDC, HBITMAP memBitmap)
 
 	// 스크롤 Bar의 값 표시해주기
 	WCHAR text[10];
-	wsprintf(text, L"R : %d", R);
+	wsprintf(text, L"R : %03d", R);
 	TextOutW(memDC, 360, 40, text, lstrlenW(text));
-	wsprintf(text, L"G : %d", G);
+	wsprintf(text, L"G : %03d", G);
 	TextOutW(memDC, 360, 70, text, lstrlenW(text));
-	wsprintf(text, L"B : %d", B);
+	wsprintf(text, L"B : %03d", B);
 	TextOutW(memDC, 360, 100, text, lstrlenW(text));
 
 	SelectObject(memDC, OldBrush);
@@ -229,8 +229,19 @@ POINT Erase(HWND hWnd, HDC hdc, WPARAM wParam, LPARAM lParam, POINT stPos)
 	return stPos;
 }
 
-// 이미지 씌우기
-// 더블버퍼링
-// 색상선택
-// 버튼 제어
-// 등등 기능을 쪼개서 하나씩 추가할 예정
+/* 커스텀 버튼 */
+void CreateButtonCustom(const WCHAR* name, LONG x, LONG y, LONG width, LONG height, HMENU id, HWND hWnd, HINSTANCE hInst)
+{
+	CreateWindowW(L"button", name, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, x, y, width, height, hWnd, id, hInst, NULL);
+}
+
+/* 환영 문구 그리기 */ 
+void DrawGreetingText(HWND hWnd, HDC hdc) 
+{
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	const WCHAR* text = L"Welcome to the Paint Application!";
+	SetBkMode(hdc, TRANSPARENT);
+	DrawTextW(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+	SetBkMode(hdc, OPAQUE);
+}
