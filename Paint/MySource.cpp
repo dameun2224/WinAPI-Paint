@@ -22,7 +22,7 @@ HWND InitMainWindowSet(HINSTANCE hInstance, WNDPROC WndProc, const WCHAR* name)
 	RegisterClassExW(&wcex);
 
 	// 해당 윈도우 창을 가지고와서 윈도우 창 생성하기
-	return CreateWindowW(name, name, WS_MAXIMIZE | WS_SYSMENU, 100, 100, 750, 750, nullptr, nullptr, hInstance, nullptr);
+	return CreateWindowW(name, name, WS_MAXIMIZE | WS_SYSMENU | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 100, 100, 750, 750, nullptr, nullptr, hInstance, nullptr);
 }
 
 /* 버튼 생성하기 */
